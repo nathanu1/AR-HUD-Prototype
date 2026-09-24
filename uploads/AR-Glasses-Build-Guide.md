@@ -54,19 +54,18 @@ The recurring design decision is **where the split is**: which work happens on t
 
 ---
 
-## 3. The optical system — the hard part
+## 3. The optical system 
 
 Difficulty within itself; making the optics, The combiner merges your tiny bright image with the world.
 
-### Combiner options, ranked by DIY-friendliness
+### Combiner options
 
-1. **Simple magnifier + plate/pellicle beamsplitter .** A lens collimates the microdisplay; a partially-reflective flat (a 50/50 beamsplitter plate, or a pellicle) bounces it into the eye while you see through it. Cheapest, most forgiving, smallest FOV, dimmest. Great for learning.
-2. **Birdbath optics** Light from the display hits a beamsplitter at ~45°, reflects to a concave ("birdbath") spherical mirror that collimates and magnifies it, then passes back through the beamsplitter to the eye. Off-the-shelf beamsplitter cubes/plates and small concave mirrors make this buildable. It's bulkier and you lose a lot of light passing the beamsplitter twice (often only ~10–25% efficiency), but image quality and FOV are good. This is the standard hobbyist and many early-commercial choice.
-3. **Reflective freeform / prism.** A custom-shaped prism folds the path. Larger FOV, but you need the specific part — you're sourcing, not fabricating.
-4. **Waveguides.** A thin glass/plastic slab; light is coupled in, bounces by total internal reflection, and is coupled out to the eye via gratings. Sleek and thin, but fabrication needs nanometer-scale gratings and clean-room processes. Throughput is brutal — only on the order of **a few percent** of the light from the engine reaches the eye, which is why waveguide builds demand extremely bright panels. You *can buy* waveguide evaluation modules; you cannot make good ones at home.
-5. **Retinal/laser beam scanning.** Scans an image directly toward the retina. Always-in-focus, but laser safety and alignment are serious — not a beginner path.
+1. **Simple magnifier + plate/pellicle beamsplitter .** A lens collimates the microdisplay; a partially-reflective flat (a 50/50 beamsplitter plate, or a pellicle) bounces it into the eye while you see through it.  smallest FOV, dimmest. 
+2. **Birdbath optics** Light from the display hits a beamsplitter at ~45°, reflects to a concave ("birdbath") spherical mirror that collimates and magnifies it, then passes back through the beamsplitter to the eye. Off-the-shelf beamsplitter cubes/plates and small concave mirrors make this buildable. It's bulkier and you lose a lot of light passing the beamsplitter twice (often only ~10–25% efficiency), but image quality and FOV are good. 
+3. **Reflective freeform / prism.** A custom-shaped prism folds the path. Larger FOV, but you need the specific part.
+4. **Waveguides.** A thin glass/plastic slab; light is coupled in, bounces by total internal reflection, and is coupled out to the eye via gratings. Sleek and thin, but fabrication needs nanometer-scale gratings and clean-room processes. Throughput is brutal — only on the order of **a few percent** of the light from the engine reaches the eye, which is why waveguide builds demand extremely bright panels. 
+5. **Retinal/laser beam scanning.** Scans an image directly toward the retina. Always-in-focus, but laser safety and alignment
 
-**Verdict:** start with magnifier-on-a-bench to validate, then build a **birdbath** for the wearable.
 
 ### Math
 
@@ -102,17 +101,16 @@ A near-eye display is a magnifier: a small panel sits near the focal point of an
 The microdisplay is the image source. Sub-inch panels are the norm; you magnify them with the optics above.
 
 ### Technology choices
-- **Micro-OLED (OLED-on-silicon / OLEDoS).** Excellent contrast and color, true blacks, very high pixel density (commercial panels reach into the **thousands of PPI**, ~4,000–5,000). The most popular and accessible choice for makers; widely available as modules with driver boards. Brightness (typically up to a few thousand nits at panel) is fine indoors and through efficient optics, but **marginal for bright outdoor see-through**.
+- **Micro-OLED (OLED-on-silicon / OLEDoS).** Excellent contrast and color, true blacks, very high pixel density (commercial panels reach into the **thousands of PPI**, ~4,000–5,000). widely available as modules with driver boards. Brightness (typically up to a few thousand nits at panel) is fine indoors and through efficient optics, but **marginal for bright outdoor see-through**.
 - **LCoS (liquid crystal on silicon).** Reflective, needs an illumination source; mature, used in many AR dev kits. More optical plumbing than OLED.
 - **DLP (digital micromirror).** Bright, fast; bulkier engine.
-- **MicroLED.** The future for outdoor AR: self-emissive and astonishingly bright — panels can reach into the **millions of nits**, which is what waveguides' tiny throughput demands. Still expensive, mostly monochrome or early full-color, and dominated by a small number of suppliers. Overkill and over-budget for a first HUD; worth watching.
+- **MicroLED.** The future for outdoor AR: self-emissive and astonishingly bright — panels can reach into the **millions of nits**, which is what waveguides' tiny throughput demands. Still expensive, mostly monochrome or early full-color, and dominated by a small number of suppliers. 
 
-**Verdict:** use a **Micro-OLED module with an HDMI- or MIPI-DSI-input driver board** for your first build. It's the path of least resistance.
 
 ### What to look for in a module
 - **Interface:** a board accepting **HDMI** is easiest to drive from an SBC or laptop; **MIPI-DSI** is lighter/more integrated but needs a host that can emit DSI (or a bridge chip). A 0.2–0.5-inch panel at 640×400 up to 1920×1080 is a sensible range.
 - **Brightness** (nits at panel) and **power draw** — both feed your thermal and battery budget.
-- **Driver board size** — it has to fit in a temple arm.
+- **Driver board size** — fit in a temple arm.
 - Monocular = one panel + one driver. Binocular = two, plus the headache of feeding both and color/brightness matching them.
 
 ---
@@ -124,41 +122,33 @@ Decide the split (see §2), then pick silicon for each side.
 ### On-glasses (always present)
 A **microcontroller acting as a sensor hub + power manager**: reads the IMU/sensors, does light filtering, manages the battery and charging, handles buttons/touch, and talks to the host.
 - **ESP32-S3** is a strong pick: Wi-Fi + BLE built in, plenty of I²C/SPI, low power, tiny. Great for the sensor-hub role and for wireless control.
-- An **nRF52/nRF53** is even more power-frugal if you mainly need BLE.
+- An **nRF52/nRF53**  power-frugal if you mainly need BLE.
 
 ### Host (renders the UI / runs apps)
-- **Tier 1 (HUD):** your **phone** is the best host. It has the GPU, the radios, the battery, and the data (maps, notifications). Glasses become a Bluetooth/USB display + sensor peripheral. Lowest weight on your face.
+- **Tier 1 (HUD):** your **phone**  host. It has the GPU, the radios, the battery, and the data (maps, notifications). Glasses become a Bluetooth/USB display + sensor peripheral. Lowest weight on your face.
 - **Tier 1–2 standalone:** a **Raspberry Pi Compute Module 4/5** (on a custom or off-the-shelf carrier) gives real GPU and Linux in a small footprint. A **Raspberry Pi Zero 2 W** is lighter for very simple overlays.
-- **Tier 2–3 with vision/SLAM:** an **NVIDIA Jetson** (Orin Nano class) provides the GPU/AI throughput for computer vision, but it's hot and power-hungry — pocket it, don't face-mount it.
-
-**Don't** try to render world-locked AR on a bare MCU. MCUs run the sensors and the plumbing; a GPU-class device renders the scene.
-
+- **Tier 2–3 with vision/SLAM:** an **NVIDIA Jetson** (Orin Nano class) provides the GPU/AI throughput for computer vision, but it's hot and power-hungry 
 ---
-
 ## 6. Sensors
 
-Match the sensor suite to your tier — don't pay the compute/power cost of sensors your UX doesn't use.
-
+sensor suite tiers
 - **IMU (9-DoF: accel + gyro + magnetometer).** *Mandatory.* Gives head orientation at high rate for low-latency, stable overlays. The gyro is fast but drifts; the accelerometer and magnetometer correct drift via sensor fusion (a Madgwick/Mahony or Kalman filter). For a head-locked HUD, a good fused IMU is *all* you need.
 - **Camera (RGB, CSI/MIPI).** Needed for any computer vision: object/text recognition, QR/marker tracking, photo capture, and — combined with the IMU — **visual-inertial odometry (VIO)**, the backbone of positional tracking.
 - **Depth / Time-of-Flight (ToF) or stereo cameras.** Only for Tier 3: building a 3D mesh of the room so virtual objects can sit on surfaces and **occlude** correctly. Heavy compute.
 - **Ambient light sensor (ALS).** Cheap and worth it: auto-dims the display so the overlay is readable indoors and not blinding at night, and saves power.
 - **Microphone(s).** For voice commands / assistant input; an array enables beamforming.
-- **Eye-tracking (IR cameras).** Advanced. Enables **foveated rendering** (full detail only where you look, saving GPU) and gaze-based interaction. Skip for a first build.
+- **Eye-tracking (IR cameras).** Advanced. Enables **foveated rendering** (full detail only where you look, saving GPU) and gaze-based interaction.
 
-**Tier 1 sensor kit:** 9-DoF IMU + ALS + a button/touch strip. That's it.
+**Tier 1 sensor kit:** 9-DoF IMU + ALS + a button/touch strip. 
 
 ---
 
 ## 7. Connectivity
 
-- **USB-C** — the workhorse for a tethered build: carries video (DisplayPort Alt Mode), data, *and* power in one cable. Strongly preferred for Tier 1–2 prototypes.
-- **BLE (Bluetooth Low Energy)** — low-power control channel and for streaming sensor data / notifications from a phone. Ideal for a wireless HUD where the phone does the heavy lifting.
+- **USB-C** — the workhorse for a tethered build: carries video (DisplayPort Alt Mode), data, *and* power in one cable. 
+- **BLE (Bluetooth Low Energy)** — low-power control channel and for streaming sensor data / notifications from a phone. Ideal for a wireless HUD for phone powered.
 - **Wi-Fi** — higher bandwidth (e.g., streaming rendered frames or camera video) at a real power cost.
 
-A clean Tier 1 wireless design: phone ↔ glasses over **BLE** for control + notification payloads, glasses render simple overlays locally on the MCU/SBC.
-
----
 
 ## 8. Power and thermals
 
@@ -173,12 +163,12 @@ Power is a constant fight because the battery sits on your head (or you tether t
 | IMU + ALS + misc sensors | <0.2 W |
 | Radios (BLE idle→active) | 0.05–0.5 W |
 | **Total (on-glasses compute)** | **~2–5 W** |
-| **Total (phone-tethered, glasses dumb)** | **~0.7–2 W** |
+| **Total (phone-tethered,)** | **~0.7–2 W** |
 
 ### Battery sizing
 Energy (Wh) = battery capacity. A small **LiPo** of ~500 mAh @ 3.7 V ≈ 1.85 Wh. At 2 W that's under an hour; at 1 W (tethered/dumb-glasses) ~1.5–2 h. This is exactly why HUDs tether or keep on-glasses compute minimal.
 
-### Power essentials (do not skip)
+### Power essentials
 - Use a proper **battery management system (BMS)** / protected LiPo: over-charge, over-discharge, and short protection. Lithium cells are unforgiving.
 - Add **USB-C PD** charging and a clean buck/boost rail for your logic voltages.
 - **Thermals:** anything on your temple that runs warm is uncomfortable fast. Keep hot silicon (SBC/Jetson) off the face — pocket it and tether — or budget for spreading heat across metal frame elements. A face-mounted >2–3 W hotspot is a comfort failure.
@@ -285,7 +275,7 @@ Build a **calibration routine**: align the rendered image to the user's eye (pos
 
 ---
 
-## 14. Common pitfalls 
+## 14. pitfalls 
 
 - **Skipping the bench optics stage** and 3D-printing a frame around optics you haven't validated. Always free-space-align first.
 - **Chasing FOV.** Big FOV fights eyebox and form factor (étendue). Modest FOV, done well, beats ambitious FOV done badly.
@@ -295,7 +285,3 @@ Build a **calibration routine**: align the rendered image to the user's eye (pos
 - **Rigid optical mounts on the first frame** — you need adjustment to align, then lock it in.
 - **Trying to render world-locked AR on an MCU** — wrong tool; you need a GPU-class host and a real tracking pipeline.
 
----
-
-### TL;DR
-Build a **monocular, optical see-through, birdbath HUD**, drive a **Micro-OLED panel over HDMI**, render the overlay on a **phone or small SBC**, get head orientation from a **fused 9-DoF IMU on an ESP32-S3**, and obsess over a **stable, glanceable, high-contrast, low-latency overlay**. Prove the optics on a bench first, integrate in stages, and only climb toward binocular waveguides and world-locked spatial AR once Tier 1 actually works on your face.
