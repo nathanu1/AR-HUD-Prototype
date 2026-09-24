@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:#0b0d11}
+  ::-webkit-scrollbar{width:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:rgba(255,255,255,.14)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5.5px;border-radius:50%;background:#7be6e6;box-shadow:0 0 10px -1px #7be6e6;cursor:pointer}
+  @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:.2}}
+  @keyframes slidein{from{transform:translateX(14px)}to{transform:translateX(0)}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="--bg:#0b0d11;--surf:#13161c;--surf2:#171b22;--line:rgba(255,255,255,.09);--tx:#e7eaf0;--dim:#8b94a3;--cy:oklch(0.86 0.13 195);--am:oklch(0.82 0.13 75);height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--tx);font-family:'Space Grotesk',system-ui,sans-serif;overflow:hidden">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);flex:none">
+    <div style="display:flex;align-items:center;gap:13px">
+      <div style="width:34px;height:16px;border:1.5px solid var(--cy);border-radius:8px;box-shadow:0 0 16px -3px var(--cy);position:relative">
+        <div style="position:absolute;left:50%;top:50%;width:6px;height:1.5px;background:var(--cy);transform:translate(-50%,-50%)"></div>
+      </div>
+      <div>
+        <div style="font-weight:700;letter-spacing:.16em;font-size:13px">AR HUD OVERLAY</div>
+        <div style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim);margin-top:2px">TIER 1 · MONOCULAR · OPTICAL SEE-THROUGH</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="padding:5px 11px;border:1px solid var(--line);border-radius:3px;background:rgba(255,255,255,.03);font:600 11px 'JetBrains Mono',monospace"><span style="color:var(--dim);font-weight:500">FOV </span><span style="color:var(--cy)">{{ fovDStr }}°</span></div>
+      <div style="padding:5px 11px;border:1px solid var(--line);border-radius:3px;background:rgba(255,255,255,.03);font:600 11px 'JetBrains Mono',monospace"><span style="color:var(--dim);font-weight:500">LAT </span><span style="color:var(--cy)">{{ latency }}ms</span></div>
+      <div style="padding:5px 11px;border:1px solid var(--line);border-radius:3px;background:rgba(255,255,255,.03);font:600 11px 'JetBrains Mono',monospace"><span style="color:var(--dim);font-weight:500">MTP </span><span ref="{{ mtpRef }}" style="color:var(--am)">0.00°</span></div>
+    </div>
+  </header>
+
+  <main style="flex:1;display:flex;min-height:0">
+    <section style="flex:1;display:flex;flex-direction:column;min-width:0;padding:24px 26px;gap:16px;background:radial-gradient(120% 80% at 50% -10%,rgba(120,230,230,.04),transparent 60%)">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;min-height:0">
+        <div ref="{{ viewportRef }}" style="position:relative;width:100%;max-width:min(100%,calc((100vh - 230px)*1.6));aspect-ratio:16/9;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,.15);box-shadow:0 34px 90px -34px #000,inset 0 0 0 1px rgba(0,0,0,.5);background:#05070a;cursor:grab;touch-action:none">
+
+          <div ref="{{ envRef }}" style="position:absolute;left:-50%;top:-50%;width:200%;height:200%;will-change:transform">
+            <div style="position:absolute;left:0;top:0;width:100%;height:62%;background:linear-gradient(180deg,#16233b 0%,#2a3a55 60%,#41506a 100%)"></div>
+            <div style="position:absolute;left:0;top:42%;width:100%;height:20%;display:flex;align-items:flex-end;justify-content:center;gap:22px;opacity:.85">
+              <div style="width:34px;height:62%;background:#0c1422"></div>
+              <div style="width:48px;height:90%;background:#0a111d"></div>
+              <div style="width:28px;height:48%;background:#0d1525"></div>
+              <div style="width:58px;height:100%;background:#0a101b"></div>
+              <div style="width:38px;height:70%;background:#0c1322"></div>
+              <div style="width:30px;height:55%;background:#0d1525"></div>
+              <div style="width:50px;height:84%;background:#0a111d"></div>
+            </div>
+            <div style="position:absolute;left:0;top:61.4%;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(150,200,220,.5),transparent)"></div>
+            <div style="position:absolute;left:0;top:62%;width:100%;height:38%;background:#0d141f;overflow:hidden">
+              <div style="position:absolute;left:-50%;top:0;width:200%;height:320%;background-image:repeating-linear-gradient(90deg,rgba(130,175,195,.16) 0 1.5px,transparent 1.5px 72px),repeating-linear-gradient(0deg,rgba(130,175,195,.12) 0 1.5px,transparent 1.5px 54px);transform:perspective(360px) rotateX(76deg);transform-origin:top center"></div>
+            </div>
+          </div>
+
+          <div ref="{{ washRef }}" style="position:absolute;inset:0;background:radial-gradient(130% 130% at 50% 32%,#e2edfb,#c7d8f0);mix-blend-mode:screen;opacity:0;pointer-events:none"></div>
+
+          <div ref="{{ overlayRef }}" style="position:absolute;inset:0;mix-blend-mode:screen;pointer-events:none">
+            <div ref="{{ frameRef }}" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:20%;height:14%;border:1px dashed rgba(120,230,230,.45);border-radius:3px;overflow:hidden">
+
+              <div style="position:absolute;left:7px;top:6px;font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(120,230,230,.7)" ref="{{ frameLabelRef }}">RENDERED IMAGE</div>
+              <div style="position:absolute;left:0;top:0;width:14px;height:14px;border-left:1.5px solid var(--cy);border-top:1.5px solid var(--cy)"></div>
+              <div style="position:absolute;right:0;top:0;width:14px;height:14px;border-right:1.5px solid var(--cy);border-top:1.5px solid var(--cy)"></div>
+              <div style="position:absolute;left:0;bottom:0;width:14px;height:14px;border-left:1.5px solid var(--cy);border-bottom:1.5px solid var(--cy)"></div>
+              <div style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-right:1.5px solid var(--cy);border-bottom:1.5px solid var(--cy)"></div>
+
+              <sc-if value="{{ showCompass }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;left:0;top:9%;width:100%;height:30px;overflow:hidden">
+                  <div ref="{{ compassRef }}" style="position:absolute;left:50%;top:0;height:100%;width:2160px;will-change:transform">
+                    <sc-for list="{{ compassTicks }}" as="tk" hint-placeholder-count="24">
+                      <div style="position:absolute;bottom:5px;transform:translateX(-50%);display:flex;flex-direction:column-reverse;align-items:center;gap:3px;left:{{ tk.leftPx }}">
+                        <div style="width:1.5px;background:var(--cy);height:{{ tk.lineH }};opacity:{{ tk.op }}"></div>
+                        <span style="font:600 8.5px 'JetBrains Mono',monospace;color:var(--cy);letter-spacing:.04em">{{ tk.label }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="position:absolute;left:50%;top:-3px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">
+                    <span ref="{{ headingRef }}" style="font:700 14px 'JetBrains Mono',monospace;color:#fff;text-shadow:0 0 10px var(--cy)">090</span>
+                    <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--cy);margin-top:1px"></div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ showWorld }}" hint-placeholder-val="{{ true }}">
+                <div ref="{{ worldRef }}" style="position:absolute;left:50%;top:50%;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--am);will-change:transform">
+                  <div style="width:10px;height:10px;border:1.5px solid var(--am);transform:rotate(45deg);box-shadow:0 0 12px -2px var(--am)"></div>
+                  <div style="font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.06em;white-space:nowrap;text-shadow:0 0 8px rgba(0,0,0,.6)">ENTRANCE · 38m</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isNav }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--cy)">
+                  <div style="width:32px;height:32px;border-top:6px solid var(--cy);border-right:6px solid var(--cy);transform:rotate(45deg);box-shadow:0 0 20px -4px var(--cy);border-radius:2px"></div>
+                  <div style="display:flex;align-items:baseline;gap:4px;text-shadow:0 0 12px var(--cy)"><span ref="{{ distRef }}" style="font:600 22px 'JetBrains Mono',monospace">320</span><span style="font:500 12px 'JetBrains Mono',monospace;color:rgba(120,230,230,.8)">m</span></div>
+                </div>
+                <div style="position:absolute;left:50%;bottom:7%;transform:translateX(-50%);padding:4px 11px;border:1px solid rgba(120,230,230,.5);border-radius:4px;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.05em;color:var(--cy);white-space:nowrap;background:rgba(10,30,32,.35)">TURN RIGHT · 5TH AVE</div>
+              </sc-if>
+
+              <sc-if value="{{ isTel }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;left:8%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;color:var(--cy);text-shadow:0 0 10px var(--cy)">
+                  <span style="font:500 9px 'JetBrains Mono',monospace;color:rgba(120,230,230,.7);letter-spacing:.14em">SPD km/h</span>
+                  <span ref="{{ speedRef }}" style="font:600 26px 'JetBrains Mono',monospace">12.4</span>
+                </div>
+                <div style="position:absolute;right:8%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:var(--cy);text-shadow:0 0 10px var(--cy)">
+                  <span style="font:500 9px 'JetBrains Mono',monospace;color:rgba(120,230,230,.7);letter-spacing:.14em">ALT m</span>
+                  <span ref="{{ altRef }}" style="font:600 26px 'JetBrains Mono',monospace">142</span>
+                </div>
+                <div style="position:absolute;left:50%;bottom:12%;transform:translateX(-50%);width:104px;height:104px;border-radius:50%;border:1px solid rgba(120,230,230,.45);overflow:hidden;box-shadow:0 0 18px -8px var(--cy)">
+                  <div ref="{{ attitudeRef }}" style="position:absolute;left:-50%;top:-50%;width:200%;height:200%;will-change:transform">
+                    <div style="position:absolute;left:0;top:50%;width:100%;height:50%;background:rgba(120,230,230,.09);border-top:1.5px solid var(--cy)"></div>
+                  </div>
+                  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:1.5px;background:var(--am)"></div>
+                  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%;background:var(--am)"></div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isNotif }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;right:7px;top:15%;display:flex;flex-direction:column;gap:6px;width:52%">
+                  <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="3">
+                    <div style="border:1px solid rgba(120,230,230,.32);border-left:2px solid {{ n.accent }};border-radius:4px;padding:6px 9px;background:rgba(8,24,26,.45)\">
+                      <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+                        <span style="width:5px;height:5px;border-radius:50%;background:{{ n.accent }};animation:blink 1.6s infinite"></span>
+                        <span style="font:600 8px 'JetBrains Mono',monospace;letter-spacing:.12em;color:{{ n.accent }}">{{ n.tag }}</span>
+                      </div>
+                      <div style="font:600 11px 'Space Grotesk',sans-serif;color:#fff;line-height:1.2">{{ n.title }}</div>
+                      <div style="font:400 10px 'Space Grotesk',sans-serif;color:rgba(200,230,235,.78);line-height:1.3;margin-top:1px">{{ n.body }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isMinimal }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;left:50%;top:14%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <span ref="{{ clockRef }}" style="font:600 28px 'JetBrains Mono',monospace;color:var(--cy);text-shadow:0 0 14px var(--cy)">10:24</span>
+                  <div style="display:flex;align-items:center;gap:6px;padding:4px 11px;border:1px solid rgba(120,230,230,.4);border-radius:999px;background:rgba(10,30,32,.35)">
+                    <span style="width:5px;height:5px;border-radius:50%;background:var(--cy);animation:blink 1.6s infinite"></span>
+                    <span style="font:500 10px 'Space Grotesk',sans-serif;color:rgba(200,230,235,.9)">Dana · Optics aligned</span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:var(--cy);opacity:.65;box-shadow:0 0 8px var(--cy)"></div>
+            </div>
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(120,230,230,.045) 0 1px,transparent 1px 3px);opacity:.55"></div>
+          </div>
+
+          <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(125% 125% at 50% 50%,transparent 52%,rgba(0,0,0,.6) 100%)"></div>
+          <div style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);pointer-events:none;white-space:nowrap;font:500 9.5px 'JetBrains Mono',monospace;letter-spacing:.18em;color:rgba(255,255,255,.4)">↤ DRAG TO LOOK AROUND ↦</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:18px;flex:none;font:500 10.5px 'JetBrains Mono',monospace;color:var(--dim)">
+        <span style="letter-spacing:.06em">MONOCULAR · RIGHT-EYE SIM</span>
+        <div style="flex:1;display:flex;align-items:center;gap:10px;max-width:380px">
+          <span style="letter-spacing:.08em;white-space:nowrap">MTP ERROR</span>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div ref="{{ errBarRef }}" style="height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--am))"></div></div>
+          <span ref="{{ errRef }}" style="color:var(--am);min-width:64px">0.00°</span>
+        </div>
+      </div>
+    </section>
+
+    <aside style="width:392px;flex:none;border-left:1px solid var(--line);background:var(--surf);overflow-y:auto;padding:22px 22px 60px;display:flex;flex-direction:column;gap:26px">
+
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div style="font:600 10.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim)">01 · OVERLAY LAYOUT</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <sc-for list="{{ layoutOpts }}" as="opt" hint-placeholder-count="4">
+            <button onClick="{{ opt.onClick }}" style="{{ opt.style }}">
+              <span style="font:600 12.5px 'Space Grotesk',sans-serif">{{ opt.label }}</span>
+              <span style="font-size:10px;opacity:.66;font-weight:400">{{ opt.desc }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:7px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--cy);margin-top:5px;flex:none;box-shadow:0 0 8px var(--cy)"></div>
+          <p style="margin:0;font:400 11px/1.5 'Space Grotesk',sans-serif;color:var(--dim)">Glanceable, peripheral, minimal — every widget readable in under a second.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div style="font:600 10.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim)">02 · OPTICS — FOV CALCULATOR</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Panel height (h)</span><span style="font:600 12px 'JetBrains Mono',monospace;color:var(--cy)">{{ panelH }} mm</span></div>
+          <input type="range" min="1.4" max="8" step="0.1" value="{{ panelH }}" onChange="{{ onPanelH }}" style="width:100%">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Focal length (f)</span><span style="font:600 12px 'JetBrains Mono',monospace;color:var(--cy)">{{ focalF }} mm</span></div>
+          <input type="range" min="8" max="32" step="1" value="{{ focalF }}" onChange="{{ onFocal }}" style="width:100%">
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;border:1px solid var(--line);border-radius:3px;padding:8px 9px;background:rgba(255,255,255,.02)"><div style="font:500 9px 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--dim)">VERT</div><div style="font:600 16px 'JetBrains Mono',monospace;color:var(--tx)">{{ fovVStr }}°</div></div>
+          <div style="flex:1;border:1px solid var(--line);border-radius:3px;padding:8px 9px;background:rgba(255,255,255,.02)"><div style="font:500 9px 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--dim)">HORIZ</div><div style="font:600 16px 'JetBrains Mono',monospace;color:var(--tx)">{{ fovHStr }}°</div></div>
+          <div style="flex:1;border:1px solid var(--cy);border-radius:3px;padding:8px 9px;background:rgba(120,230,230,.08)"><div style="font:500 9px 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--cy)">DIAG</div><div style="font:600 16px 'JetBrains Mono',monospace;color:var(--cy)">{{ fovDStr }}°</div></div>
+        </div>
+        <button onClick="{{ applyExample }}" style="align-self:flex-start;padding:6px 12px;border:1px solid var(--line);border-radius:3px;background:rgba(255,255,255,.03);color:var(--dim);font:600 10px 'JetBrains Mono',monospace;letter-spacing:.05em;cursor:pointer">↺ 0.2″ PANEL · f=15 EXAMPLE</button>
+        <div style="display:flex;gap:7px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--cy);margin-top:5px;flex:none;box-shadow:0 0 8px var(--cy)"></div>
+          <p style="margin:0;font:400 11px/1.5 'Space Grotesk',sans-serif;color:var(--dim)">FOV = 2·arctan((h/2)/f). The dashed frame in-view is the panel image — étendue ties FOV ↔ eyebox ↔ size, you only get two.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div style="font:600 10.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim)">03 · DISPLAY — BRIGHTNESS</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Ambient light sensor</span>
+          <button onClick="{{ toggleAls }}" style="{{ alsBtnStyle }}">AUTO {{ alsState }}</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Panel brightness</span><span style="font:600 12px 'JetBrains Mono',monospace;color:var(--cy)">{{ brightnessLabel }}</span></div>
+          <input type="range" min="0" max="100" step="1" value="{{ brightness }}" onChange="{{ onBright }}" style="width:100%">
+        </div>
+        <div>
+          <div style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim);margin-bottom:7px">Beamsplitter ratio (image / world)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <sc-for list="{{ splitterOpts }}" as="opt" hint-placeholder-count="3">
+              <button onClick="{{ opt.onClick }}" style="{{ opt.style }}"><span style="font:600 12px 'JetBrains Mono',monospace">{{ opt.label }}</span><span style="font-size:9.5px;opacity:.66;font-weight:400">{{ opt.desc }}</span></button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;gap:7px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--cy);margin-top:5px;flex:none;box-shadow:0 0 8px var(--cy)"></div>
+          <p style="margin:0;font:400 11px/1.5 'Space Grotesk',sans-serif;color:var(--dim)">Additive optics: black = transparent. Switch to Day — bright scenes wash the image out unless the ALS drives brightness up.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div style="font:600 10.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim)">04 · TRACKING — LATENCY</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <sc-for list="{{ trackOpts }}" as="opt" hint-placeholder-count="2">
+            <button onClick="{{ opt.onClick }}" style="{{ opt.style }}"><span style="font:600 12px 'Space Grotesk',sans-serif">{{ opt.label }}</span><span style="font-size:9.5px;opacity:.66;font-weight:400">{{ opt.desc }}</span></button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Motion-to-photon latency</span><span style="font:600 12px 'JetBrains Mono',monospace;color:var(--am)">{{ latency }} ms</span></div>
+          <input type="range" min="0" max="240" step="2" value="{{ latency }}" onChange="{{ onLatency }}" style="width:100%">
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:500 11px 'Space Grotesk',sans-serif;color:var(--dim)">Auto head-sway (demo)</span>
+          <button onClick="{{ toggleDrift }}" style="{{ driftBtnStyle }}">{{ driftState }}</button>
+        </div>
+        <div style="display:flex;gap:7px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--am);margin-top:5px;flex:none;box-shadow:0 0 8px var(--am)"></div>
+          <p style="margin:0;font:400 11px/1.5 'Space Grotesk',sans-serif;color:var(--dim)">Push latency up in World-locked mode — the amber anchor lags head motion and visibly "swims" off its real-world point.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div style="font:600 10.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--dim)">05 · SCENE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <sc-for list="{{ todOpts }}" as="opt" hint-placeholder-count="3">
+            <button onClick="{{ opt.onClick }}" style="{{ opt.style }}"><span style="font:600 12px 'Space Grotesk',sans-serif">{{ opt.label }}</span></button>
+          </sc-for>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;hudColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7be6e6&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;minimal&quot;,&quot;nav&quot;,&quot;telemetry&quot;,&quot;notif&quot;],&quot;default&quot;:&quot;nav&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;autoDrift&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { layout:'nav', panelH:2.5, focalF:15, brightness:72, alsAuto:true, splitter:'50', tod:'dusk', latency:24, drift:true, trackingMode:'world' };
+
+  rootRef=React.createRef(); viewportRef=React.createRef(); envRef=React.createRef(); washRef=React.createRef();
+  overlayRef=React.createRef(); frameRef=React.createRef(); frameLabelRef=React.createRef(); worldRef=React.createRef();
+  compassRef=React.createRef(); headingRef=React.createRef(); speedRef=React.createRef(); altRef=React.createRef();
+  clockRef=React.createRef(); distRef=React.createRef(); errRef=React.createRef(); errBarRef=React.createRef();
+  attitudeRef=React.createRef(); mtpRef=React.createRef();
+
+  trueYaw=0; truePitch=0; dispYaw=0; dispPitch=0; targetYaw=0; targetPitch=0;
+  dragging=false; dragX=0; dragY=0; baseYaw=0; basePitch=0; t=0; last=0;
+  _fovH=17; _fovV=9.5; anchorYaw=13; anchorPitch=-1;
+
+  clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+
+  applyHud(){ const c=this.props && this.props.hudColor; if(c && this.rootRef.current) this.rootRef.current.style.setProperty('--cy', c); }
+
+  componentDidMount(){
+    const p=this.props||{};
+    if(p.startLayout && ['minimal','nav','telemetry','notif'].includes(p.startLayout)) this.setState({layout:p.startLayout});
+    if(p.autoDrift===false) this.setState({drift:false});
+    this.applyHud();
+    const vp=this.viewportRef.current;
+    if(vp){
+      this._down=(e)=>{ this.dragging=true; this.dragX=e.clientX; this.dragY=e.clientY; this.baseYaw=this.targetYaw; this.basePitch=this.targetPitch; vp.style.cursor='grabbing'; };
+      this._move=(e)=>{ if(!this.dragging)return; this.targetYaw=this.clamp(this.baseYaw+(e.clientX-this.dragX)*0.09,-26,26); this.targetPitch=this.clamp(this.basePitch-(e.clientY-this.dragY)*0.06,-12,12); };
+      this._up=()=>{ if(this.dragging)vp.style.cursor='grab'; this.dragging=false; };
+      vp.addEventListener('pointerdown',this._down);
+      window.addEventListener('pointermove',this._move);
+      window.addEventListener('pointerup',this._up);
+    }
+    this.last=performance.now();
+    this.tick=this.tick.bind(this);
+    this.frame();
+    this.raf=requestAnimationFrame(this.tick);
+  }
+
+  componentDidUpdate(prev){
+    if(prev.props && prev.props.hudColor!==this.props.hudColor) this.applyHud();
+    if(prev.props && prev.props.startLayout!==this.props.startLayout && this.props.startLayout) this.setState({layout:this.props.startLayout});
+    this.frame();
+  }
+
+  componentWillUnmount(){
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('pointermove',this._move);
+    window.removeEventListener('pointerup',this._up);
+    const vp=this.viewportRef.current; if(vp)vp.removeEventListener('pointerdown',this._down);
+  }
+
+  tick(now){
+    const dt=Math.min(64, now-this.last); this.last=now; this.t+=dt;
+    const s=this.state;
+    if(s.drift && !this.dragging){
+      this.targetYaw=Math.sin(this.t*0.00038)*15 + Math.sin(this.t*0.00097)*4;
+      this.targetPitch=Math.sin(this.t*0.00031)*4.5;
+    }
+    this.trueYaw += (this.targetYaw-this.trueYaw)*Math.min(1,dt*0.009);
+    this.truePitch += (this.targetPitch-this.truePitch)*Math.min(1,dt*0.009);
+    const tau=s.latency/1000;
+    const a = tau<=0.002 ? 1 : (1-Math.exp(-(dt/1000)/tau));
+    this.dispYaw += (this.trueYaw-this.dispYaw)*a;
+    this.dispPitch += (this.truePitch-this.dispPitch)*a;
+    this.frame();
+    this.raf=requestAnimationFrame(this.tick);
+  }
+
+  frame(){
+    const s=this.state;
+    const vp=this.viewportRef.current;
+    if(vp){
+      const vw=vp.clientWidth, vh=vp.clientHeight;
+      const FH=36, FV=20, ppdH=vw/FH, ppdV=vh/FV;
+      const intensity = s.alsAuto ? ({day:1.0,dusk:0.74,night:0.5}[s.tod]) : s.brightness/100;
+      const imageShare = ({'50':0.5,'wb':0.3,'ib':0.7}[s.splitter]);
+
+      if(this.envRef.current){
+        this.envRef.current.style.transform=`translate(${(-this.trueYaw*ppdH*1.15).toFixed(2)}px,${(this.truePitch*ppdV*1.15).toFixed(2)}px)`;
+        const eb=({day:1.34,dusk:0.92,night:0.5}[s.tod])*(0.72+0.5*(1-imageShare));
+        this.envRef.current.style.filter=`brightness(${eb.toFixed(3)}) saturate(1.05)`;
+      }
+      if(this.washRef.current) this.washRef.current.style.opacity=({day:0.38,dusk:0.13,night:0}[s.tod]).toFixed(2);
+      if(this.overlayRef.current) this.overlayRef.current.style.opacity=this.clamp(intensity*(0.55+0.7*imageShare),0.12,1).toFixed(3);
+
+      const fw=this.clamp(this._fovH/FH,0.08,0.98)*vw;
+      const fh=this.clamp(this._fovV/FV,0.06,0.98)*vh;
+      if(this.frameRef.current){ this.frameRef.current.style.width=fw.toFixed(1)+'px'; this.frameRef.current.style.height=fh.toFixed(1)+'px'; }
+      if(this.frameLabelRef.current) this.frameLabelRef.current.textContent=`PANEL ${this._fovH.toFixed(1)}°×${this._fovV.toFixed(1)}°`;
+      const ppdFrame=fw/Math.max(1,this._fovH);
+      if(this.worldRef.current){
+        const x=(this.anchorYaw-this.dispYaw)*ppdFrame;
+        const y=(-(this.anchorPitch-this.dispPitch))*ppdFrame;
+        this.worldRef.current.style.transform=`translate(calc(-50% + ${x.toFixed(1)}px),calc(-50% + ${y.toFixed(1)}px))`;
+      }
+      if(this.compassRef.current){
+        const heading=((90+this.dispYaw*2)%360+360)%360;
+        this.compassRef.current.style.transform=`translateX(${(-heading*6).toFixed(1)}px)`;
+        if(this.headingRef.current) this.headingRef.current.textContent=String(Math.round(heading)).padStart(3,'0');
+      }
+      if(this.attitudeRef.current) this.attitudeRef.current.style.transform=`translateY(${(this.truePitch*3.2).toFixed(1)}px) rotate(${(-this.trueYaw*0.5).toFixed(2)}deg)`;
+    }
+
+    if(this.speedRef.current) this.speedRef.current.textContent=(12.4+Math.sin(this.t*0.0009)*2.6).toFixed(1);
+    if(this.altRef.current) this.altRef.current.textContent=String(Math.round(142+Math.sin(this.t*0.0004)*6));
+    if(this.distRef.current) this.distRef.current.textContent=String(Math.round(320-((this.t*0.012)%280)));
+    if(this.clockRef.current){ const d=new Date(); this.clockRef.current.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+    const err=Math.abs(this.trueYaw-this.dispYaw);
+    if(this.mtpRef.current) this.mtpRef.current.textContent=err.toFixed(2)+'°';
+    if(this.errRef.current) this.errRef.current.textContent=err.toFixed(2)+'°';
+    if(this.errBarRef.current) this.errBarRef.current.style.width=(this.clamp(err/8,0,1)*100).toFixed(1)+'%';
+  }
+
+  renderVals(){
+    try{window.__rv=(window.__rv||0)+1;}catch(e){}
+    const s=this.state;
+    const CY='oklch(0.86 0.13 195)', AM='oklch(0.82 0.13 75)';
+    const h=s.panelH, f=s.focalF, w=h*16/9, dg=Math.sqrt(h*h+w*w);
+    const deg=(x)=>2*Math.atan((x/2)/f)*180/Math.PI;
+    const fovV=deg(h), fovH=deg(w), fovD=deg(dg);
+    this._fovH=fovH; this._fovV=fovV;
+
+    const baseBtn={display:'flex',flexDirection:'column',gap:'3px',alignItems:'flex-start',textAlign:'left',padding:'10px 11px',borderRadius:'3px',border:'1px solid rgba(255,255,255,.08)',background:'rgba(255,255,255,.025)',color:'var(--dim)',cursor:'pointer',transition:'all .15s'};
+    const actBtn={border:'1px solid '+CY,background:'rgba(120,230,230,.10)',color:CY,boxShadow:'0 0 18px -9px '+CY};
+    const ctr={alignItems:'center',textAlign:'center'};
+    const mk=(arr,cur,k,extra)=>arr.map(o=>({key:o.key,label:o.label,desc:o.desc,onClick:()=>this.setState({[k]:o.key}),style:{...baseBtn,...(extra||{}),...(o.key===cur?actBtn:{})}}));
+
+    const layoutOpts=mk([{key:'minimal',label:'Minimal',desc:'Clock · 1 alert'},{key:'nav',label:'Navigation',desc:'Turn-by-turn'},{key:'telemetry',label:'Telemetry',desc:'Speed · attitude'},{key:'notif',label:'Notifications',desc:'Peripheral cards'}],s.layout,'layout');
+    const splitterOpts=mk([{key:'wb',label:'70/30',desc:'World'},{key:'50',label:'50/50',desc:'Balanced'},{key:'ib',label:'30/70',desc:'Image'}],s.splitter,'splitter',ctr);
+    const trackOpts=mk([{key:'head',label:'Head-locked',desc:'Fixed to view'},{key:'world',label:'World-locked',desc:'Anchored in space'}],s.trackingMode,'trackingMode');
+    const todOpts=mk([{key:'day',label:'Day'},{key:'dusk',label:'Dusk'},{key:'night',label:'Night'}],s.tod,'tod',ctr);
+
+    const pill=(on)=>({padding:'7px 14px',borderRadius:'999px',border:'1px solid '+(on?CY:'rgba(255,255,255,.13)'),background:on?'rgba(120,230,230,.12)':'rgba(255,255,255,.03)',color:on?CY:'var(--dim)',font:"600 11px 'JetBrains Mono',monospace",letterSpacing:'.08em',cursor:'pointer'});
+
+    const card={0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW',360:'N'};
+    const compassTicks=[];
+    for(let d=0;d<=360;d+=15){ const major=d%45===0; compassTicks.push({leftPx:(d*6)+'px',lineH:major?'14px':'8px',op:major?'1':'0.5',label:major?card[d]:''}); }
+
+    const isMinimal=s.layout==='minimal', isNav=s.layout==='nav', isTel=s.layout==='telemetry', isNotif=s.layout==='notif';
+
+    return {
+      rootRef:this.rootRef, viewportRef:this.viewportRef, envRef:this.envRef, washRef:this.washRef, overlayRef:this.overlayRef,
+      frameRef:this.frameRef, frameLabelRef:this.frameLabelRef, worldRef:this.worldRef, compassRef:this.compassRef,
+      headingRef:this.headingRef, speedRef:this.speedRef, altRef:this.altRef, clockRef:this.clockRef, distRef:this.distRef,
+      errRef:this.errRef, errBarRef:this.errBarRef, attitudeRef:this.attitudeRef, mtpRef:this.mtpRef,
+      layoutOpts, splitterOpts, trackOpts, todOpts, compassTicks,
+      isMinimal, isNav, isTel, isNotif,
+      showCompass:isNav||isTel, showWorld:s.trackingMode==='world',
+      panelH:s.panelH, focalF:s.focalF, latency:s.latency, brightness:s.brightness,
+      fovVStr:fovV.toFixed(1), fovHStr:fovH.toFixed(1), fovDStr:fovD.toFixed(1),
+      brightnessLabel: s.alsAuto ? 'AUTO '+Math.round({day:100,dusk:74,night:50}[s.tod])+'%' : s.brightness+'%',
+      alsState:s.alsAuto?'ON':'OFF', alsBtnStyle:pill(s.alsAuto),
+      driftState:s.drift?'ON':'OFF', driftBtnStyle:pill(s.drift),
+      onPanelH:(e)=>this.setState({panelH:Number(e.target.value)}),
+      onFocal:(e)=>this.setState({focalF:Number(e.target.value)}),
+      onBright:(e)=>this.setState({brightness:Number(e.target.value),alsAuto:false}),
+      onLatency:(e)=>this.setState({latency:Number(e.target.value)}),
+      applyExample:()=>this.setState({panelH:2.5,focalF:15}),
+      toggleAls:()=>this.setState(p=>({alsAuto:!p.alsAuto})),
+      toggleDrift:()=>this.setState(p=>({drift:!p.drift})),
+      notifs:[
+        {tag:'MESSAGES',title:'Dana Okafor',body:'Optics aligned at f=15 — ship it',accent:CY},
+        {tag:'CALENDAR',title:'Hardware sync',body:'10:30 · in 12 min',accent:AM}
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
