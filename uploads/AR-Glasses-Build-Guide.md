@@ -2,19 +2,17 @@
 
 This is a full-stack breakdown of what it takes to build a pair of see-through glasses that paint a user interface over the real world. It covers optics, display, compute, sensors, power, mechanical design, the software/UX layer, and the order you should actually build things in.
 
-> **One honest framing before you start.** "AR glasses" spans an enormous difficulty range. A monocular heads-up display that floats notifications and navigation arrows in your periphery is a weekend-to-few-months maker project. A binocular, world-locked, occlusion-capable display with the image welded to physical space is a problem that billion-dollar companies are still fighting. The single biggest determinant of how hard your build is, is **the optical combiner** — getting an image in front of the eye while still seeing the world. Pick your tier deliberately, because everything else flows from it.
+> "AR glasses" spans an enormous difficulty range. A monocular heads-up display that floats notifications and navigation arrows in your periphery. A binocular, world-locked, occlusion-capable display with the image welded to physical space is a problem that billion-dollar companies are still fighting. The single biggest determinant of how hard your build is, is **the optical combiner** — getting an image in front of the eye while still seeing the world. 
 
 ---
 
-## 0. Choose your tier first
+## 0. Build Levels
 
-| Tier | What it does | Optics | Compute | Realistic for a maker? |
+| Tier | What it does | Optics | Compute |  
 |---|---|---|---|---|
 | **1 — Glanceable HUD** | Monocular overlay: notifications, time, nav arrows, telemetry, teleprompter. Image floats in space, *not* locked to the world. | Birdbath or simple magnifier + beamsplitter | Phone or small SBC, MCU for sensors | **Yes.** Best starting point. |
 | **2 — Head-locked binocular** | Two displays, stereo image, still floats with your head. Bigger virtual screen, watch-video / multi-widget UX. | Two birdbath modules **or** sourced waveguide modules | SBC (Raspberry Pi CM-class / Jetson) | Hard but doable. Alignment is the pain. |
 | **3 — World-locked spatial AR** | Objects anchored to physical space, survive head movement, can hide behind real things (occlusion). | Waveguides + precise calibration | Jetson-class + SLAM | **Not realistically DIY** at good quality. Source a dev kit instead. |
-
-**Recommendation:** build Tier 1 first, completely, even if your ambition is Tier 2/3. You'll learn the optics, the latency budget, and the UX constraints on cheap hardware before you commit to expensive parts.
 
 ---
 
@@ -63,15 +61,15 @@ Difficulty within itself; making the optics, The combiner merges your tiny brigh
 
 ### Combiner options, ranked by DIY-friendliness
 
-1. **Simple magnifier + plate/pellicle beamsplitter (easiest).** A lens collimates the microdisplay; a partially-reflective flat (a 50/50 beamsplitter plate, or a pellicle) bounces it into the eye while you see through it. Cheapest, most forgiving, smallest FOV, dimmest. Great for learning.
-2. **Birdbath optics (recommended sweet spot).** Light from the display hits a beamsplitter at ~45°, reflects to a concave ("birdbath") spherical mirror that collimates and magnifies it, then passes back through the beamsplitter to the eye. Off-the-shelf beamsplitter cubes/plates and small concave mirrors make this buildable. It's bulkier and you lose a lot of light passing the beamsplitter twice (often only ~10–25% efficiency), but image quality and FOV are good. This is the standard hobbyist and many early-commercial choice.
+1. **Simple magnifier + plate/pellicle beamsplitter .** A lens collimates the microdisplay; a partially-reflective flat (a 50/50 beamsplitter plate, or a pellicle) bounces it into the eye while you see through it. Cheapest, most forgiving, smallest FOV, dimmest. Great for learning.
+2. **Birdbath optics** Light from the display hits a beamsplitter at ~45°, reflects to a concave ("birdbath") spherical mirror that collimates and magnifies it, then passes back through the beamsplitter to the eye. Off-the-shelf beamsplitter cubes/plates and small concave mirrors make this buildable. It's bulkier and you lose a lot of light passing the beamsplitter twice (often only ~10–25% efficiency), but image quality and FOV are good. This is the standard hobbyist and many early-commercial choice.
 3. **Reflective freeform / prism.** A custom-shaped prism folds the path. Larger FOV, but you need the specific part — you're sourcing, not fabricating.
-4. **Waveguides (commercial gold standard, not DIY-fabricable).** A thin glass/plastic slab; light is coupled in, bounces by total internal reflection, and is coupled out to the eye via gratings. Sleek and thin, but fabrication needs nanometer-scale gratings and clean-room processes. Throughput is brutal — only on the order of **a few percent** of the light from the engine reaches the eye, which is why waveguide builds demand extremely bright panels. You *can buy* waveguide evaluation modules; you cannot make good ones at home.
+4. **Waveguides.** A thin glass/plastic slab; light is coupled in, bounces by total internal reflection, and is coupled out to the eye via gratings. Sleek and thin, but fabrication needs nanometer-scale gratings and clean-room processes. Throughput is brutal — only on the order of **a few percent** of the light from the engine reaches the eye, which is why waveguide builds demand extremely bright panels. You *can buy* waveguide evaluation modules; you cannot make good ones at home.
 5. **Retinal/laser beam scanning.** Scans an image directly toward the retina. Always-in-focus, but laser safety and alignment are serious — not a beginner path.
 
 **Verdict:** start with magnifier-on-a-bench to validate, then build a **birdbath** for the wearable.
 
-### The optics math you actually need
+### Math
 
 A near-eye display is a magnifier: a small panel sits near the focal point of an optic so the eye sees a large *virtual* image at a comfortable distance.
 
@@ -240,7 +238,7 @@ Build a **calibration routine**: align the rendered image to the user's eye (pos
 
 ## 11. Build Plans Future
 
-1. **Optics on the bench.** Microdisplay + lens + beamsplitter/mirror on a breadboard. Drive the panel from a laptop over HDMI. Goal: a focused, correctly-sized virtual image you can see with your eye at the right relief. Measure your real FOV and eyebox. *Nothing else proceeds until this looks good.*
+1. **Optics on the bench.** Microdisplay + lens + beamsplitter/mirror on a breadboard. Drive the panel from a laptop over HDMI. Goal: a focused, correctly-sized virtual image you can see with your eye at the right relief. Measure your real FOV and eyebox. 
 2. **Sensors + fusion on the bench.** Wire the IMU to the ESP32-S3, run the fusion filter, visualize orientation on a PC (spin a cube). Tune until stable and drift-free.
 3. **Render an overlay on the host.** Build the UI (start with a clock + a notification + a heading indicator). Feed it the live orientation so the overlay reacts to head motion. Tune latency and smoothing.
 4. **Close the loop tethered.** Combine: host renders → panel displays; MCU streams sensor data → host. Confirm the overlay is stable, readable, and low-latency *through the optics*, on your bench rig.
@@ -288,12 +286,12 @@ Build a **calibration routine**: align the rendered image to the user's eye (pos
 
 ---
 
-## 14. Common pitfalls (learn these cheaply)
+## 14. Common pitfalls 
 
 - **Skipping the bench optics stage** and 3D-printing a frame around optics you haven't validated. Always free-space-align first.
 - **Chasing FOV.** Big FOV fights eyebox and form factor (étendue). Modest FOV, done well, beats ambitious FOV done badly.
 - **Underestimating brightness** for outdoor use — birdbath + Micro-OLED is an *indoor* combo unless you invest heavily.
-- **Putting hot, hungry compute on the face.** Tether or pocket it.
+- **Putting hot, hungry compute on the face.** 
 - **Ignoring latency and stability** in the UX — a laggy or jittery overlay feels broken regardless of how pretty it is.
 - **Rigid optical mounts on the first frame** — you need adjustment to align, then lock it in.
 - **Trying to render world-locked AR on an MCU** — wrong tool; you need a GPU-class host and a real tracking pipeline.
