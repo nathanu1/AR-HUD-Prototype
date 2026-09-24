@@ -10,9 +10,9 @@ This is a full-stack breakdown of what it takes to build a pair of see-through g
 
 | Tier | What it does | Optics | Compute |  
 |---|---|---|---|---|
-| **1 — Glanceable HUD** | Monocular overlay: notifications, time, nav arrows, telemetry, teleprompter. Image floats in space, *not* locked to the world. | Birdbath or simple magnifier + beamsplitter | Phone or small SBC, MCU for sensors | **Yes.** Best starting point. |
-| **2 — Head-locked binocular** | Two displays, stereo image, still floats with your head. Bigger virtual screen, watch-video / multi-widget UX. | Two birdbath modules **or** sourced waveguide modules | SBC (Raspberry Pi CM-class / Jetson) | Hard but doable. Alignment is the pain. |
-| **3 — World-locked spatial AR** | Objects anchored to physical space, survive head movement, can hide behind real things (occlusion). | Waveguides + precise calibration | Jetson-class + SLAM | **Not realistically DIY** at good quality. Source a dev kit instead. |
+| **1 — Glanceable HUD** | Monocular overlay: notifications, time, nav arrows, telemetry, teleprompter. Image floats in space, *not* locked to the world. | Birdbath or simple magnifier + beamsplitter | Phone or small SBC, MCU for sensors 
+| **2 — Head-locked binocular** | Two displays, stereo image, still floats with your head. Bigger virtual screen, watch-video / multi-widget UX. | Two birdbath modules **or** sourced waveguide modules | SBC (Raspberry Pi CM-class / Jetson) | 
+| **3 — World-locked spatial AR** | Objects anchored to physical space, survive head movement, can hide behind real things (occlusion). | Waveguides + precise calibration | Jetson-class + SLAM |
 
 ---
 
